@@ -68,7 +68,14 @@
             <h4>Skills</h4>
             <div v-for="skill in skills" :key="skill.name">
               <component :is="proficiencyIconBySkill(skill)"></component>
-              <span style="font-size: 10px; font-weight: bold; color: darkgray; margin-left: 5px;">
+              <span
+                style="
+                  font-size: 10px;
+                  font-weight: bold;
+                  color: darkgray;
+                  margin-left: 5px;
+                "
+              >
                 {{ AbilityScore[skill.abilityScore] }}
               </span>
               {{ skill.name }}
@@ -77,10 +84,37 @@
           </div>
           <!-- property line -->
         </div>
-        <!-- top stats -->
-        <svg height="5" width="100%" class="tapered-rule">
-          <polyline points="0,0 400,2.5 0,5"></polyline>
-        </svg>
+        <div class="actions">
+          <h3>Actions</h3>
+          <div
+            class="property-block"
+            v-for="action in statBlock.actions"
+            :key="action.name"
+          >
+            <h4>{{ action.name }}.</h4>
+            <p>
+              <i v-if="action.subName">{{ action.subName }}: </i>
+              {{ action.description }}
+            </p>
+          </div>
+          <!-- property block -->
+        </div>
+        <div class="actions">
+          <h3>Bonus Actions</h3>
+          <div
+            class="property-block"
+            v-for="bonusAction in statBlock.bonusActions"
+            :key="bonusAction.name"
+          >
+            <h4>{{ bonusAction.name }}.</h4>
+            <p>
+              <i v-if="bonusAction.subName">{{ bonusAction.subName }}: </i>
+              {{ bonusAction.description }}
+            </p>
+          </div>
+          <!-- property block -->
+        </div>
+        <!-- actions -->
       </div>
       <!-- section left -->
       <div class="section-right">
@@ -98,38 +132,7 @@
             </p>
           </div>
         </div>
-        <div class="actions">
-          <h3>Actions</h3>
-          <div
-            class="property-block"
-            v-for="action in statBlock.actions"
-            :key="action.name"
-          >
-            <h4>{{ action.name }}.</h4>
-            <p>
-              <i v-if="action.subName">{{ action.subName }}: </i>
-              {{ action.description }}
-            </p>
-          </div>
-          <!-- property block -->
-        </div>
-        <!-- actions -->
-        <div class="actions">
-          <h3>Bonus Actions</h3>
-          <div
-            class="property-block"
-            v-for="bonusAction in statBlock.bonusActions"
-            :key="bonusAction.name"
-          >
-            <h4>{{ bonusAction.name }}.</h4>
-            <p>
-              <i v-if="bonusAction.subName">{{ bonusAction.subName }}: </i>
-              {{ bonusAction.description }}
-            </p>
-          </div>
-          <!-- property block -->
-        </div>
-        <!-- actions -->
+        
       </div>
       <!-- section right -->
       <hr class="orange-border bottom" />
@@ -203,6 +206,26 @@ const statBlock: StatBlock = {
       description:
         "The Diplomat may spend a trick to stop a creature from attacking, casting a spell, or using an ability during their next turn.",
     },
+    {
+      name: "Getting Your Hands Dirty",
+      description:
+        "You may spend a trick to automatically succeed on an attack roll.",
+    },
+    {
+      name: "Sway the Crowds",
+      description:
+        "You have a powerful effect on people. Once per day, one person who you have interacted with will wish to protect you for the day.",
+    },
+    {
+      name: "I Know You, I Swear",
+      description:
+        "You have quite an extensive network of friends. Once per combat, you can make a Knowledge check. If you succeed, one humanoid enemy becomes friendly with you (though not necessarily the party).",
+    },
+    {
+      name: "It's All Coming Together",
+      description:
+        "If at any point you have successfully targeted 3 beings with Diplomat's Intuition, you've understood the enemies' plan of attack and constructed a counterplan. All allies within earshot (including yourself) can either move or take a single free attack, which they make at advantage.",
+    },
   ],
   actions: [
     {
@@ -214,13 +237,8 @@ const statBlock: StatBlock = {
     {
       name: "Personal Defense Repulsor",
       description:
-        "When activated, this handheld canister releases a small seismic wave. All beings within 10 feet must make a Dexterity saving throw or be thrown back 15 feet. The canister recharges in 1 hour.",
-    },
-    {
-      name: "It's All Coming Together",
-      description:
-        "If at any point you have successfully targeted 3 allied beings with Diplomat's Intuition, you can use an action to activate your ultimate ability. You've understood the enemies' plan of attack and constructed a counterplan: All allies within earshot (including yourself) can either move or take a single free attack, which they make at advantage.",
-    },
+        "When activated, this handheld canister releases a small seismic wave. All beings within 10 feet must make a DC 16 Dexterity Saving Throw or be thrown back 15 feet. The canister recharges in 1 hour.",
+    }
   ],
   bonusActions: [
     {
@@ -264,18 +282,18 @@ const skillVal = (x: Skill, statBlock: StatBlock): number => {
   const baseMod = scoreToMod(
     statBlock.abilityScores.find((a) => x.abilityScore == a.score)?.value ?? 10
   );
-  const proficiencyLevel = proficiencyLevelBySkill(x)
+  const proficiencyLevel = proficiencyLevelBySkill(x);
   return baseMod + statBlock.proficiencyBonus * proficiencyLevel;
 };
 const proficiencyLevelBySkill = (x: Skill) => {
-  return statBlock.proficiencies.find(p => p.name == x.name)?.level ?? 0;
-}
-const proficiencyIconBySkill = (x:Skill) => {
+  return statBlock.proficiencies.find((p) => p.name == x.name)?.level ?? 0;
+};
+const proficiencyIconBySkill = (x: Skill) => {
   const level = proficiencyLevelBySkill(x);
   if (level == 1) return ProficientIcon;
   if (level == 2) return ExpertiseIcon;
-  return DefaultIcon
-}
+  return DefaultIcon;
+};
 const skillValString = (x: Skill, statBlock: StatBlock): string => {
   const value = skillVal(x, statBlock);
   return (value > 0 ? "+" : "") + value;

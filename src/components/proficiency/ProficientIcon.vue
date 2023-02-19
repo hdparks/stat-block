@@ -10,6 +10,6 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 </script>
 <style>
 .proficiency-level-icon.proficient {
-  color: #7A200D;
+  color: #7a200d;
 }
 </style>
